@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AWSlider: UIControl {
+@IBDesignable public class AWSlider: UIControl {
     
     @IBInspectable var value: Float
     
@@ -19,21 +19,18 @@ class AWSlider: UIControl {
     @IBInspectable var maximumValueImage: UIImage
     
     @IBInspectable var minimumTrackTintColor: UIColor
-//    @IBInspectable var currentMinimumTrackImage : UIColor
-    
     @IBInspectable var maximumTrackTintColor: UIColor
-//    @IBInspectable var currentMaximumTrackImage : UIColor
     
     @IBInspectable var thumbTintColor: UIColor
-    
-//    @IBInspectable var currentThumbImage: UIImage
+    @IBInspectable var thumbTagTintColor: UIColor
+    @IBInspectable var currentThumbImage: UIImage
     
     @IBInspectable var thumbHeight: CGFloat
-    @IBInspectable var sliderFrame: CGRect
-    
-    @IBInspectable var thumbTagTintColor: UIColor
     
     //    var continuous : Bool
+    
+    var sliderFrame: CGRect
+    
     var minimumTrack: UIView?
     var maximumTrack: UIView?
     var thumb: UIButton?
@@ -42,7 +39,7 @@ class AWSlider: UIControl {
     var maxBtn: UIButton?
     var minBtn: UIButton?
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         self.value = 70.0
         self.minimumValue = 60.0
         self.maximumValue = 100.0
@@ -54,43 +51,43 @@ class AWSlider: UIControl {
         self.maximumTrackTintColor = UIColor.whiteColor()
         self.thumbTintColor = UIColor.whiteColor()
         self.thumbTagTintColor = UIColor.whiteColor()
+        self.currentThumbImage = UIImage.init()
         
         super.init(coder: aDecoder)
     }
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         
         if (self.minimumTrack == nil) {
-            sliderFrame = CGRect(x: 0.0, y: self.frame.size.width, width: self.frame.size.width, height: self.frame.size.height - self.frame.size.width*2)
+            self.sliderFrame = CGRect(x: 0.0, y: self.frame.size.width, width: self.frame.size.width, height: self.frame.size.height - self.frame.size.width*2)
             
             let origin = self.sliderFrame.origin
             let size = self.sliderFrame.size
-            let percentage : Float = (value - minimumValue)/(maximumValue - minimumValue)
-            let thumbY = size.height - thumbHeight - ((size.height - thumbHeight) * CGFloat(percentage))
+            let percentage : Float = (self.value - self.minimumValue)/(self.maximumValue - self.minimumValue)
+            let thumbY = size.height - self.thumbHeight - ((size.height - self.thumbHeight) * CGFloat(percentage))
             
-            maxBtn = UIButton(frame: CGRect(x: 0.0, y: 0.0, width:size.width , height: size.width))
-            minBtn = UIButton(frame: CGRect(x: 0.0, y: size.height + size.width, width:size.width , height: size.width))
-            maximumTrack = UIView(frame: CGRect(x: origin.x, y: origin.y, width: size.width, height: size.height))
-            minimumTrack = UIView(frame: CGRect(x: 0.0, y: thumbY, width: size.width, height: size.height - thumbY))
-            thumb = UIButton(frame: CGRect(x: 0.0, y:  0.0, width: size.width, height: thumbHeight))
-            thumbTag = UIButton(frame: CGRect(x: size.width, y: -50.0, width: 50.0, height: 50.0))
+            self.maxBtn = UIButton(frame: CGRect(x: 0.0, y: 0.0, width:size.width , height: size.width))
+            self.minBtn = UIButton(frame: CGRect(x: 0.0, y: size.height + size.width, width:size.width , height: size.width))
+            self.maximumTrack = UIView(frame: CGRect(x: origin.x, y: origin.y, width: size.width, height: size.height))
+            self.minimumTrack = UIView(frame: CGRect(x: 0.0, y: thumbY, width: size.width, height: size.height - thumbY))
+            self.thumb = UIButton(frame: CGRect(x: 0.0, y:  0.0, width: size.width, height: self.thumbHeight))
+            self.thumbTag = UIButton(frame: CGRect(x: size.width, y: -50.0, width: 50.0, height: 50.0))
             
-            
-            
-            if let max: UIButton = maxBtn,
-                min: UIButton = minBtn,
-                maxView: UIView = maximumTrack,
-                minView: UIView = minimumTrack,
-                button: UIButton = thumb,
-                tag: UIButton = thumbTag {
-                    max.setImage(UIImage(named: "Plus"), forState: .Normal)
-                    min.setImage(UIImage(named: "Minus"), forState: .Normal)
+            if let max: UIButton = self.maxBtn,
+                min: UIButton = self.minBtn,
+                maxView: UIView = self.maximumTrack,
+                minView: UIView = self.minimumTrack,
+                button: UIButton = self.thumb,
+                tag: UIButton = self.thumbTag {
+                    max.setImage(self.maximumValueImage, forState: .Normal)
+                    min.setImage(self.minimumValueImage, forState: .Normal)
+                    button.setImage(self.currentThumbImage, forState: .Normal)
                     
-                    maxView.backgroundColor = maximumTrackTintColor
-                    minView.backgroundColor = minimumTrackTintColor
-                    button.backgroundColor = thumbTintColor
-                    tag.backgroundColor = thumbTagTintColor
+                    maxView.backgroundColor = self.maximumTrackTintColor
+                    minView.backgroundColor = self.minimumTrackTintColor
+                    button.backgroundColor = self.thumbTintColor
+                    tag.backgroundColor = self.thumbTagTintColor
                     
                     self.addSubview(max)
                     self.addSubview(min)
@@ -104,12 +101,12 @@ class AWSlider: UIControl {
                     button.addTarget(self, action: "moveThumb:event:", forControlEvents: .TouchDragInside)
                     tag.addTarget(self, action: "moveThumb:event:", forControlEvents: .TouchDragInside)
                     
-                    tag.setTitle("\(value)", forState: UIControlState.Normal)
+                    tag.setTitle("\(self.value)", forState: UIControlState.Normal)
             }
         }
     }
     
-    override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
+    override public func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
         // Convert the point to the target view's coordinate system.
         // The target view isn't necessarily the immediate subview
         if let view: UIButton = self.thumbTag,
@@ -171,7 +168,6 @@ class AWSlider: UIControl {
                     self.value = self.maximumValue - (self.maximumValue - self.minimumValue)*v
                     
                     self.thumbTag?.setTitle(String(format: "%.1f", self.value), forState: .Normal)
-                    // TODO: value setting?
             }
             }, completion: { (finished: Bool) in
                 return true
